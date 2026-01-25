@@ -6,6 +6,8 @@ const SQUARES = [
 ];
 let currentPlayer = 'X';
 let gameActive = true;
+let gameMode = 'pvp'; // 'pvp' or 'ai'
+let isProcessingAI = false;
 let scoreX = 0;
 let scoreO = 0;
 let scoreTie = 0;
@@ -29,6 +31,10 @@ const resetBtn = document.getElementById('reset-btn');
 const nextRoundBtn = document.getElementById('next-round-btn');
 const quitBtn = document.getElementById('quit-btn');
 
+// Mode Selectors
+const modePvpBtn = document.getElementById('mode-pvp');
+const modeAiBtn = document.getElementById('mode-ai');
+
 // Sounds
 const sounds = {
     clickX: document.getElementById('sound-click-x'),
@@ -51,33 +57,66 @@ function initGame() {
     cells.forEach(cell => {
         cell.classList.remove('x', 'o', 'win-x', 'win-o');
         cell.innerText = '';
-        cell.addEventListener('click', handleCellClick, { once: true });
+        cell.removeEventListener('click', handleCellClick); // Prevent duplicates
+        cell.addEventListener('click', handleCellClick);
     });
-    
+
     // Reset internal state
     SQUARES.forEach(sq => sq.value = '');
     currentPlayer = 'X';
     gameActive = true;
+    isProcessingAI = false;
     updateTurnIndicator();
     modalOverlay.classList.remove('active');
 }
 
+function switchMode(mode) {
+    gameMode = mode;
+    // Update UI
+    if (mode === 'pvp') {
+        modePvpBtn.classList.add('active');
+        modeAiBtn.classList.remove('active');
+    } else {
+        modeAiBtn.classList.add('active');
+        modePvpBtn.classList.remove('active');
+    }
+    // Reset game completely on mode switch
+    startNewGameFullReset();
+}
+
 function handleCellClick(e) {
-    if (!gameActive) return;
+    if (!gameActive || isProcessingAI) return;
 
     const cell = e.target;
     const index = parseInt(cell.getAttribute('data-index'));
 
+    if (SQUARES[index].value !== '') return; // Occupied
+
+    // Player Move
+    makeMove(index, currentPlayer);
+
+    // AI Turn Trigger
+    if (gameActive && gameMode === 'ai' && currentPlayer === 'O') {
+        isProcessingAI = true;
+        setTimeout(() => {
+            makeAIMove();
+            isProcessingAI = false;
+        }, 600); // Delay for realism
+    }
+}
+
+function makeMove(index, player) {
     // Update State
-    SQUARES[index].value = currentPlayer;
-    
+    SQUARES[index].value = player;
+
     // Update UI
-    cell.classList.add(currentPlayer.toLowerCase());
-    cell.innerText = currentPlayer;
-    playSound(currentPlayer === 'X' ? 'clickX' : 'clickO');
+    const cell = cells[index];
+    cell.classList.add(player.toLowerCase());
+    cell.innerText = player;
+    playSound(player === 'X' ? 'clickX' : 'clickO');
 
     // Check Win/Draw
-    if (checkWin(currentPlayer)) {
+    if (checkWin(player)) {
         endGame(false);
     } else if (isDraw()) {
         endGame(true);
@@ -86,6 +125,80 @@ function handleCellClick(e) {
     }
 }
 
+function makeAIMove() {
+    const bestIndex = getBestMove();
+    if (bestIndex !== -1) {
+        makeMove(bestIndex, 'O');
+    }
+}
+
+/* --- Minimax AI Logic --- */
+
+function getBestMove() {
+    let bestScore = -Infinity;
+    let move = -1;
+
+    // Simple improvement: Center preference if empty (optimization)
+    if (SQUARES[4].value === '') return 4;
+
+    for (let i = 0; i < 9; i++) {
+        if (SQUARES[i].value === '') {
+            SQUARES[i].value = 'O';
+            let score = minimax(SQUARES, 0, false);
+            SQUARES[i].value = ''; // Undo
+
+            if (score > bestScore) {
+                bestScore = score;
+                move = i;
+            }
+        }
+    }
+    return move;
+}
+
+function minimax(board, depth, isMaximizing) {
+    if (checkWinForMinimax(board, 'O')) return 10 - depth;
+    if (checkWinForMinimax(board, 'X')) return depth - 10;
+    if (board.every(sq => sq.value !== '')) return 0; // Draw
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i].value === '') {
+                board[i].value = 'O';
+                let score = minimax(board, depth + 1, false);
+                board[i].value = '';
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i].value === '') {
+                board[i].value = 'X';
+                let score = minimax(board, depth + 1, true);
+                board[i].value = '';
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+}
+
+function checkWinForMinimax(board, player) {
+    return WINNING_COMBINATIONS.some(combination => {
+        const [a, b, c] = combination;
+        return (
+            board[a].value === player &&
+            board[b].value === player &&
+            board[c].value === player
+        );
+    });
+}
+
+/* --- End AI Logic --- */
+
 function swapTurn() {
     currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
     updateTurnIndicator();
@@ -93,7 +206,7 @@ function swapTurn() {
 
 function updateTurnIndicator() {
     turnIcon.innerText = currentPlayer;
-    turnIcon.className = `turn-icon ${currentPlayer === 'X' ? 'x-mark' : 'o-mark'}`; // Optional: color the turn icon
+    turnIcon.className = `turn-icon ${currentPlayer === 'X' ? 'x-mark' : 'o-mark'}`;
 }
 
 function checkWin(player) {
@@ -123,19 +236,23 @@ function isDraw() {
 
 function endGame(draw) {
     gameActive = false;
-    
+
     setTimeout(() => {
         modalOverlay.classList.add('active');
         if (draw) {
             modalMessage.innerText = 'ROUND TIED';
-            modalIcon.innerHTML = ''; 
+            modalIcon.innerHTML = '';
             modalMessage.style.color = '#a8bec9';
             playSound('draw');
             scoreTie++;
             document.getElementById('score-tie').innerText = scoreTie;
         } else {
             modalMessage.innerText = currentPlayer === 'X' ? 'PLAYER 1 WINS!' : 'PLAYER 2 WINS!';
-            modalIcon.innerHTML = `<span class="${currentPlayer === 'X' ? 'x-win' : 'o-win'}">${currentPlayer}</span> TAKES THE ROUND`; 
+            if (gameMode === 'ai' && currentPlayer === 'O') {
+                modalMessage.innerText = 'CPU WINS!';
+            }
+
+            modalIcon.innerHTML = `<span class="${currentPlayer === 'X' ? 'x-win' : 'o-win'}">${currentPlayer}</span> TAKES THE ROUND`;
             modalMessage.style.color = currentPlayer === 'X' ? 'var(--color-x)' : 'var(--color-o)';
             playSound('win');
             if (currentPlayer === 'X') {
@@ -146,7 +263,7 @@ function endGame(draw) {
                 document.getElementById('score-o').innerText = scoreO;
             }
         }
-    }, 500); // Slight delay before modal
+    }, 500);
 }
 
 // Event Listeners
@@ -161,9 +278,11 @@ nextRoundBtn.addEventListener('click', () => {
 });
 
 quitBtn.addEventListener('click', () => {
-    // For now, just reset. In a larger app, this might go to a menu.
     startNewGameFullReset();
 });
+
+modePvpBtn.addEventListener('click', () => switchMode('pvp'));
+modeAiBtn.addEventListener('click', () => switchMode('ai'));
 
 function startNewGameFullReset() {
     scoreX = 0;

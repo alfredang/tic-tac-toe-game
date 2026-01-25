@@ -12,6 +12,7 @@ A sleek, modern, and responsive Tic-Tac-Toe game built entirely with vanilla HTM
 - **Modern UI/UX**: Clean dark-mode interface with soft shadows, rounded corners, and smooth transitions.
 - **Responsive Design**: Fully functional on both desktop and mobile devices.
 - **Interactive Gameplay**:
+  - **[NEW] Single Player Mode (vs CPU)**: Challenge an unbeatable AI opponent.
   - Two-player local mode (X vs O).
   - Visual indicators for player turns.
   - Animated win lines/glow effects.

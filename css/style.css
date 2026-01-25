@@ -3,14 +3,14 @@
     --card-bg: #1f3641;
     --text-color: #a8bec9;
     --text-hover: #dbe8ed;
-    
+
     --color-x: #31c3bd;
     --color-x-shadow: #118c87;
     --color-o: #f2b137;
     --color-o-shadow: #cc8b13;
-    
+
     --shadow-y: 6px;
-    
+
     --header-height: 80px;
     --border-radius: 15px;
 }
@@ -55,8 +55,13 @@ body {
     font-size: 2rem;
 }
 
-.x-mark { color: var(--color-x); }
-.o-mark { color: var(--color-o); }
+.x-mark {
+    color: var(--color-x);
+}
+
+.o-mark {
+    color: var(--color-o);
+}
 
 .turn-indicator {
     background-color: var(--card-bg);
@@ -99,6 +104,38 @@ body {
     fill: #1a2a33;
 }
 
+/* Mode Selector */
+.mode-selector {
+    display: flex;
+    background-color: var(--card-bg);
+    padding: 5px;
+    border-radius: 10px;
+    gap: 5px;
+    box-shadow: 0 4px 0 #10212a;
+}
+
+.mode-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 8px 12px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mode-btn:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.mode-btn.active {
+    background-color: #a8bec9;
+    color: #1a2a33;
+}
+
 /* Game Board */
 .game-board {
     display: grid;
@@ -110,7 +147,8 @@ body {
 .cell {
     background-color: var(--card-bg);
     border-radius: var(--border-radius);
-    height: 140px; /* Square-ish */
+    height: 140px;
+    /* Square-ish */
     box-shadow: 0 var(--shadow-y) 0 #10212a;
     cursor: pointer;
     display: flex;
@@ -122,7 +160,8 @@ body {
 }
 
 .cell:hover {
-    background-color: #263f4b; /* Slightly lighter */
+    background-color: #263f4b;
+    /* Slightly lighter */
 }
 
 .cell.x {
@@ -136,9 +175,11 @@ body {
 /* Winner Highlight */
 .cell.win-x {
     background-color: var(--color-x);
-    color: var(--card-bg); /* Contrast */
+    color: var(--card-bg);
+    /* Contrast */
     box-shadow: 0 var(--shadow-y) 0 var(--color-x-shadow);
 }
+
 .cell.win-o {
     background-color: var(--color-o);
     color: var(--card-bg);
@@ -172,9 +213,20 @@ body {
     font-weight: 700;
 }
 
-.stat-box.player-x { background-color: var(--color-x); color: #1a2a33; }
-.stat-box.player-o { background-color: var(--color-o); color: #1a2a33; }
-.stat-box.ties { background-color: #a8bec9; color: #1a2a33; }
+.stat-box.player-x {
+    background-color: var(--color-x);
+    color: #1a2a33;
+}
+
+.stat-box.player-o {
+    background-color: var(--color-o);
+    color: #1a2a33;
+}
+
+.stat-box.ties {
+    background-color: #a8bec9;
+    color: #1a2a33;
+}
 
 /* Modal */
 .modal-overlay {
@@ -184,7 +236,8 @@ body {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.5);
-    display: none; /* Hidden by default */
+    display: none;
+    /* Hidden by default */
     justify-content: center;
     align-items: center;
     z-index: 100;
@@ -195,7 +248,7 @@ body {
     width: 100%;
     padding: 40px 20px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .modal-overlay.active {
@@ -204,8 +257,13 @@ body {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 #modal-message {
@@ -225,8 +283,14 @@ body {
     align-items: center;
     gap: 16px;
 }
-.modal-icon .x-win { color: var(--color-x); }
-.modal-icon .o-win { color: var(--color-o); }
+
+.modal-icon .x-win {
+    color: var(--color-x);
+}
+
+.modal-icon .o-win {
+    color: var(--color-o);
+}
 
 .modal-actions {
     display: flex;
@@ -234,14 +298,15 @@ body {
     gap: 16px;
 }
 
-.btn-quit, .btn-next-round {
+.btn-quit,
+.btn-next-round {
     padding: 12px 20px;
     border-radius: 10px;
     border: none;
     font-weight: 700;
     cursor: pointer;
     text-transform: uppercase;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
 }
 
 .btn-quit {
@@ -249,13 +314,15 @@ body {
     color: #1a2a33;
     box-shadow: 0 4px 0 #7c919c;
 }
+
 .btn-next-round {
     background-color: var(--color-o);
     color: #1a2a33;
     box-shadow: 0 4px 0 var(--color-o-shadow);
 }
 
-.btn-quit:active, .btn-next-round:active {
+.btn-quit:active,
+.btn-next-round:active {
     transform: translateY(2px);
-    box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
 }
