@@ -4,7 +4,7 @@ A sleek, modern, and responsive Tic-Tac-Toe game built entirely with vanilla HTM
 
 **[🎮 Play the Live Demo](https://alfredang.github.io/tic-tac-toe-game/)**
 
-![Tic-Tac-Toe Preview](assets/preview.png) 
+![Tic-Tac-Toe Preview](./assets/preview.png)
 <!-- Preview showing the modern UI and Game Mode toggle -->
 
 ## Features
