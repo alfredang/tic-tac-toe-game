@@ -56,6 +56,39 @@ The project is organized into clear, separate concerns:
    - Simply open `index.html` in your preferred web browser.
    - Alternatively, use a local server (like Live Server in VS Code) for the best experience.
 
+## 🐳 Docker
+
+### Quick Start (from Docker Hub)
+
+Pull and run the pre-built image directly from Docker Hub:
+
+```bash
+docker pull tertiaryinfotech/tic-tae-toe
+docker run -d -p 8080:80 --name tic-tae-toe tertiaryinfotech/tic-tae-toe
+```
+
+Then open [http://localhost:8080](http://localhost:8080) in your browser.
+
+### Build Locally
+
+If you prefer to build the Docker image from source:
+
+```bash
+git clone https://github.com/alfredang/tic-tac-toe-game.git
+cd tic-tac-toe-game
+docker build -t tic-tae-toe .
+docker run -d -p 8080:80 --name tic-tae-toe tic-tae-toe
+```
+
+### Docker Commands Reference
+
+| Command | Description |
+|---------|-------------|
+| `docker stop tic-tae-toe` | Stop the container |
+| `docker start tic-tae-toe` | Restart the container |
+| `docker rm -f tic-tae-toe` | Remove the container |
+| `docker logs tic-tae-toe` | View container logs |
+
 ## Assets
 
 Audio files are linked in the code. To enable sound, place your `.mp3` files in `assets/sounds/` with the following names:
